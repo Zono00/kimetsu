@@ -1,0 +1,31 @@
+import glob
+import os
+import shutil
+from keras.preprocessing.image import load_img, save_img, img_to_array, array_to_img
+from keras.models import load_model
+import numpy as np
+
+path = "/content/drive/MyDrive/Kimetsu_picture/Kimetsu_random/*"
+image_path_list = glob.glob(path)
+img_list = [[img_to_array(load_img(name, target_size=(100, 100)))[:,:,::-1],name] for name in image_path_list]
+#anziro_img_list = [img_to_array(load_img(name, target_size=(100, 100)) )[:, :, ::-1]for name in image_path_list]
+classes = ["0", "1", "2"]
+
+model = load_model("/content/drive/MyDrive/Colab Notebooks/Kimetsu_classifer/model.h5")
+#画像リストをfor文で行列に直す
+for i in img_list:
+  i,name = i[0],i[1]
+  img = np.array([i])
+  #img = img_to_array(i)
+  #data += np.array([i])
+  result = model.predict(img)[0]
+
+  predicted = result.argmax()
+  pre_answer = "これは"+ classes[predicted]+ " です"
+
+  if classes[predicted]=="0":
+    shutil.move(name, "drive/MyDrive/Kimetsu_picture/Tanziro/")
+  elif classes[predicted]=="1":
+    shutil.move(name, "drive/MyDrive/Kimetsu_picture/Zennitsu/")
+  elif classes[predicted]=="2":
+    shutil.move(name, "drive/MyDrive/Kimetsu_picture/Inosuke/")
